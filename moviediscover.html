@@ -495,3 +495,764 @@
     }
   </style>
 </head>
+  
+<!-- API KEY BANNER -->
+<div id="apiKeyBanner">
+  <span>⚠ SETUP REQUIRED</span>
+  <p>Enter your TMDB API key to get started:</p>
+  <input id="apiKeyInput" type="text" placeholder="Paste your TMDB API key (v3 auth)" />
+  <button id="saveKeyBtn">Save & Load</button>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="logo" onclick="showView('home')">CINESCOPE</div>
+  <div class="nav-links">
+    <button class="nav-btn active" data-view="home">Home</button>
+    <button class="nav-btn" data-view="search">Discover</button>
+    <button class="nav-btn" data-view="lists">My Lists</button>
+  </div>
+  <div class="nav-right">
+    <div id="userInfo">
+      <span>Signed in as <strong id="usernameDisplay"></strong></span>
+      <button id="logoutBtn">Sign Out</button>
+    </div>
+    <button id="loginBtn">Sign In</button>
+  </div>
+</nav>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- HOME VIEW -->
+  <div id="homeView" class="view active">
+    <div id="heroSection">
+      <div class="hero-content">
+        <h1>DISCOVER<br/><span>CINEMA.</span></h1>
+        <p>Find your next favorite film — search, explore, and build your watchlist all in one place.</p>
+        <div class="hero-search">
+          <input type="text" id="heroSearch" placeholder="Search for a movie..." />
+          <button id="heroSearchBtn">Search →</button>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">TRENDING NOW</div>
+        <div class="section-sub">Updated daily</div>
+      </div>
+      <div class="movies-grid" id="trendingGrid">
+        <div class="loading"><div class="spinner"></div><p>Loading trending...</p></div>
+      </div>
+    </div>
+    <div class="section" style="padding-top:0">
+      <div class="section-header">
+        <div class="section-title">TOP RATED</div>
+        <div class="section-sub">All time classics</div>
+      </div>
+      <div class="movies-grid" id="topRatedGrid">
+        <div class="loading"><div class="spinner"></div><p>Loading top rated...</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH/DISCOVER VIEW -->
+  <div id="searchView" class="view">
+    <div class="section" style="padding-bottom: 16px;">
+      <div class="section-title" style="font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:2px; margin-bottom:24px;">DISCOVER MOVIES</div>
+    </div>
+    <div class="filter-bar">
+      <label>Search:</label>
+      <input type="text" id="searchInput" placeholder="Movie title..."/>
+      <button class="search-go-btn" id="doSearchBtn">Search</button>
+      <label style="margin-left:8px">Genre:</label>
+      <select id="genreSelect"><option value="">All Genres</option></select>
+      <label>Sort by:</label>
+      <select id="sortSelect">
+        <option value="popularity.desc">Most Popular</option>
+        <option value="vote_average.desc">Highest Rated</option>
+        <option value="release_date.desc">Newest</option>
+        <option value="release_date.asc">Oldest</option>
+        <option value="title.asc">Title A–Z</option>
+      </select>
+      <label>Type:</label>
+      <select id="mediaType">
+        <option value="movie">Movies</option>
+        <option value="tv">TV Shows</option>
+      </select>
+    </div>
+    <div class="section" style="padding-top:0">
+      <div class="movies-grid" id="searchGrid">
+        <div class="loading"><div class="spinner"></div><p>Loading...</p></div>
+      </div>
+      <div class="pagination" id="searchPagination"></div>
+    </div>
+  </div>
+
+  <!-- MOVIE DETAIL VIEW -->
+  <div id="movieView" class="view">
+    <button class="back-btn" id="movieBackBtn">← Back</button>
+    <div id="movieDetailContent"></div>
+  </div>
+
+<!-- TMDB ATTRIBUTION FOOTER -->
+<footer id="tmdbFooter">
+  <div class="footer-inner">
+    <img src="tmdb-logo.svg" alt="TMDB Logo" height="20" onerror="this.style.display='none';document.getElementById('tmdbBadge').style.display='inline-block'"/>
+    <span id="tmdbBadge" style="display:none;background:#01b4e4;color:#fff;font-family:'DM Sans',sans-serif;font-weight:800;font-size:13px;padding:4px 10px;border-radius:4px;letter-spacing:1px;">TMDB</span>
+    <p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+    <a href="https://www.themoviedb.org" target="_blank">themoviedb.org →</a>
+  </div>
+</footer>
+
+
+  <!-- ACTOR VIEW -->
+  <div id="actorView" class="view">
+    <button class="back-btn" id="actorBackBtn">← Back</button>
+    <div id="actorDetailContent"></div>
+  </div>
+
+  <!-- MY LISTS VIEW -->
+  <div id="listsView" class="view">
+    <div class="section" style="padding-bottom:0">
+      <div class="section-title" style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:20px">MY LISTS</div>
+    </div>
+    <div class="lists-tabs">
+      <button class="list-tab active" data-list="favorites">❤ Favorites</button>
+      <button class="list-tab" data-list="watchlist">✦ Watchlist</button>
+    </div>
+    <div class="section" style="padding-top:28px">
+      <div class="movies-grid" id="listsGrid">
+        <div class="empty-state">
+          <div class="empty-icon">🎬</div>
+          <h3>Sign in to see your lists</h3>
+          <p>Create a TMDB account and sign in to save favorites and watchlist items.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGIN VIEW -->
+  <div id="loginView" class="view">
+    <div class="login-box">
+      <div class="logo-big">CINESCOPE</div>
+      <p>Sign in with your TMDB account to save favorites, build your watchlist, and sync across devices.</p>
+      <div class="login-steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">Click <strong>"Connect to TMDB"</strong> below — you'll be redirected to TMDB to approve access.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">After approving, come back here and click <strong>"I've Approved"</strong> to complete sign-in.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">Don't have an account? <a href="https://www.themoviedb.org/signup" target="_blank">Create one free at TMDB →</a></div>
+        </div>
+      </div>
+      <button id="startLoginBtn">Connect to TMDB</button>
+      <div id="authStatus"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  CONFIG — Replace with your TMDB API key
+// ═══════════════════════════════════════════════
+let API_KEY = localStorage.getItem('tmdb_api_key') || '13d3398d7d4b5bd5db5c0ccb799141d5';
+const BASE_URL = 'https://api.themoviedb.org/3';
+const IMG_BASE = 'https://image.tmdb.org/t/p/';
+
+// ── APP STATE ──
+let sessionId = localStorage.getItem('tmdb_session') || null;
+let accountId = localStorage.getItem('tmdb_account_id') || null;
+let username  = localStorage.getItem('tmdb_username') || null;
+let requestToken = null;
+let currentPage = 1;
+let currentSearchQuery = '';
+let currentGenre = '';
+let currentSort = 'popularity.desc';
+let currentMediaType = 'movie';
+let genres = {};
+let prevView = 'home';
+let activeList = 'favorites';
+
+// ── API KEY SETUP ──
+function initApiKey() {
+  const saved = localStorage.getItem('tmdb_api_key');
+  if (saved && saved !== 'YOUR_API_KEY_HERE') {
+    API_KEY = saved;
+  }
+  // If key is hardcoded or saved, just start the app
+  if (API_KEY && API_KEY !== 'YOUR_API_KEY_HERE') {
+    $('#apiKeyBanner').hide();
+    init();
+  } else {
+    $('#apiKeyInput').val('');
+  }
+}
+
+$('#saveKeyBtn').on('click', function() {
+  const key = $('#apiKeyInput').val().trim();
+  if (!key) { showToast('Please enter your API key', 'error'); return; }
+  API_KEY = key;
+  localStorage.setItem('tmdb_api_key', key);
+  $('#apiKeyBanner').hide();
+  init();
+});
+
+// ── INIT ──
+function init() {
+  loadGenres();
+  loadTrending();
+  loadTopRated();
+  updateAuthUI();
+  if (sessionId) fetchAccountDetails();
+}
+
+// ── HELPERS ──
+function apiGet(endpoint, params = {}) {
+  return $.ajax({
+    url: `${BASE_URL}${endpoint}`,
+    data: { api_key: API_KEY, ...params },
+    method: 'GET'
+  });
+}
+
+function posterUrl(path, size = 'w300') {
+  return path ? `${IMG_BASE}${size}${path}` : `https://via.placeholder.com/300x450/16161f/7a7a8c?text=No+Image`;
+}
+
+function backdropUrl(path) {
+  return path ? `${IMG_BASE}w1280${path}` : '';
+}
+
+function profileUrl(path) {
+  return path ? `${IMG_BASE}w185${path}` : `https://via.placeholder.com/185x278/16161f/7a7a8c?text=?`;
+}
+
+function formatDate(d) {
+  if (!d) return 'N/A';
+  return new Date(d).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
+}
+
+function showToast(msg, type = 'info') {
+  const t = $('#toast');
+  t.text(msg).removeClass('success error info').addClass(type).addClass('show');
+  setTimeout(() => t.removeClass('show'), 3000);
+}
+
+// ── NAVIGATION ──
+function showView(view) {
+  $('.view').removeClass('active');
+  $('.nav-btn').removeClass('active');
+  $(`#${view}View`).addClass('active');
+  $(`.nav-btn[data-view="${view}"]`).addClass('active');
+  window.scrollTo(0,0);
+}
+
+$('.nav-btn').on('click', function() {
+  const view = $(this).data('view');
+  if (view === 'lists' && !sessionId) {
+    showToast('Sign in to access your lists', 'error');
+    showView('login');
+    return;
+  }
+  if (view === 'search') {
+    showView('search');
+    if (!$('#searchGrid .movie-card').length) discoverMovies();
+    return;
+  }
+  showView(view);
+  if (view === 'lists') loadList(activeList);
+});
+
+$('.logo').on('click', () => showView('home'));
+
+$('#movieBackBtn').on('click', function() { showView(prevView); });
+$('#actorBackBtn').on('click', function() { showView('movieView'); });
+
+// ── GENRES ──
+function loadGenres() {
+  apiGet('/genre/movie/list').done(data => {
+    genres = {};
+    data.genres.forEach(g => { genres[g.id] = g.name; });
+    const sel = $('#genreSelect');
+    data.genres.forEach(g => sel.append(`<option value="${g.id}">${g.name}</option>`));
+  });
+  apiGet('/genre/tv/list').done(data => {
+    // TV genres stored separately if needed
+  });
+}
+
+// ── MOVIE CARD HTML ──
+function movieCardHTML(item, mediaType = 'movie') {
+  const title = item.title || item.name || 'Unknown';
+  const date  = (item.release_date || item.first_air_date || '').slice(0,4);
+  const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
+  const poster = posterUrl(item.poster_path);
+  const type = item.title ? 'movie' : 'tv';
+  return `
+    <div class="movie-card" data-id="${item.id}" data-type="${type}">
+      <img src="${poster}" alt="${title}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x450/16161f/7a7a8c?text=No+Image'"/>
+      <div class="card-overlay">
+        <button class="overlay-btn fav-btn" data-id="${item.id}" data-type="${type}" title="Favorite">♥</button>
+        <button class="overlay-btn watch-btn" data-id="${item.id}" data-type="${type}" title="Watchlist">+</button>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${title}</div>
+        <div class="card-meta">
+          <span>${date || '—'}</span>
+          <span class="rating-badge">${rating}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── TRENDING ──
+function loadTrending() {
+  $('#trendingGrid').html('<div class="loading"><div class="spinner"></div><p>Loading trending...</p></div>');
+  apiGet('/trending/movie/day').done(data => {
+    const html = data.results.slice(0,10).map(m => movieCardHTML(m)).join('');
+    $('#trendingGrid').html(html);
+    bindCardEvents('#trendingGrid');
+  }).fail(() => {
+    $('#trendingGrid').html('<div class="empty-state"><p>Failed to load. Check your API key.</p></div>');
+  });
+}
+
+function loadTopRated() {
+  $('#topRatedGrid').html('<div class="loading"><div class="spinner"></div><p>Loading...</p></div>');
+  apiGet('/movie/top_rated').done(data => {
+    const html = data.results.slice(0,10).map(m => movieCardHTML(m)).join('');
+    $('#topRatedGrid').html(html);
+    bindCardEvents('#topRatedGrid');
+  });
+}
+
+// ── DISCOVER / SEARCH ──
+function discoverMovies(page = 1) {
+  const query = $('#searchInput').val().trim();
+  currentSearchQuery = query;
+  currentGenre = $('#genreSelect').val();
+  currentSort  = $('#sortSelect').val();
+  currentMediaType = $('#mediaType').val();
+  currentPage  = page;
+
+  $('#searchGrid').html('<div class="loading"><div class="spinner"></div><p>Searching...</p></div>');
+  $('#searchPagination').html('');
+
+  let endpoint, params;
+  if (query) {
+    endpoint = `/search/${currentMediaType}`;
+    params = { query, page };
+  } else {
+    endpoint = `/discover/${currentMediaType}`;
+    params = { sort_by: currentSort, page };
+    if (currentGenre) params.with_genres = currentGenre;
+  }
+
+  apiGet(endpoint, params).done(data => {
+    if (!data.results.length) {
+      $('#searchGrid').html('<div class="empty-state"><div class="empty-icon">🔍</div><h3>No results found</h3><p>Try a different search term or genre.</p></div>');
+      return;
+    }
+    const html = data.results.map(m => movieCardHTML(m, currentMediaType)).join('');
+    $('#searchGrid').html(html);
+    bindCardEvents('#searchGrid');
+    buildPagination(data.total_pages, page);
+  }).fail(() => {
+    $('#searchGrid').html('<div class="empty-state"><p>Search failed. Check your API key.</p></div>');
+  });
+}
+
+$('#doSearchBtn').on('click', () => discoverMovies(1));
+$('#searchInput').on('keypress', e => { if (e.which === 13) discoverMovies(1); });
+$('#genreSelect, #sortSelect, #mediaType').on('change', () => discoverMovies(1));
+
+// Hero search
+$('#heroSearchBtn').on('click', () => {
+  const q = $('#heroSearch').val().trim();
+  if (!q) return;
+  $('#searchInput').val(q);
+  showView('search');
+  discoverMovies(1);
+});
+$('#heroSearch').on('keypress', e => {
+  if (e.which === 13) $('#heroSearchBtn').trigger('click');
+});
+
+// ── PAGINATION ──
+function buildPagination(totalPages, current) {
+  const max = Math.min(totalPages, 500);
+  let html = '';
+  html += `<button class="page-btn" ${current<=1?'disabled':''} data-page="${current-1}">‹ Prev</button>`;
+  let start = Math.max(1, current - 2);
+  let end   = Math.min(max, current + 2);
+  if (start > 1) html += `<button class="page-btn" data-page="1">1</button>${start>2?'<span style="color:var(--muted);padding:0 4px">…</span>':''}`;
+  for (let i = start; i <= end; i++) {
+    html += `<button class="page-btn ${i===current?'active':''}" data-page="${i}">${i}</button>`;
+  }
+  if (end < max) html += `${end<max-1?'<span style="color:var(--muted);padding:0 4px">…</span>':''}<button class="page-btn" data-page="${max}">${max}</button>`;
+  html += `<button class="page-btn" ${current>=max?'disabled':''} data-page="${current+1}">Next ›</button>`;
+  $('#searchPagination').html(html);
+}
+
+$(document).on('click', '#searchPagination .page-btn:not(:disabled)', function() {
+  discoverMovies(parseInt($(this).data('page')));
+  $('html,body').animate({scrollTop: $('#searchView').offset().top - 80}, 300);
+});
+
+// ── MOVIE DETAIL ──
+function bindCardEvents(container) {
+  $(container).find('.movie-card').on('click', function(e) {
+    if ($(e.target).hasClass('overlay-btn')) return;
+    const id   = $(this).data('id');
+    const type = $(this).data('type') || 'movie';
+    openMovieDetail(id, type);
+  });
+  $(container).find('.fav-btn').on('click', function(e) {
+    e.stopPropagation();
+    addToList($(this).data('id'), $(this).data('type'), 'favorite');
+  });
+  $(container).find('.watch-btn').on('click', function(e) {
+    e.stopPropagation();
+    addToList($(this).data('id'), $(this).data('type'), 'watchlist');
+  });
+}
+
+function openMovieDetail(id, type = 'movie') {
+  prevView = $('.view.active').attr('id').replace('View','');
+  showView('movie');
+  $('#movieDetailContent').html('<div class="loading" style="min-height:400px"><div class="spinner"></div><p>Loading...</p></div>');
+
+  $.when(
+    apiGet(`/${type}/${id}`, { append_to_response: 'credits,videos' })
+  ).done(movie => {
+    const cast = movie.credits?.cast?.slice(0,15) || [];
+    const backdrop = backdropUrl(movie.backdrop_path);
+    const genres_html = (movie.genres||[]).map(g=>`<span class="genre-tag">${g.name}</span>`).join('');
+    const runtime = movie.runtime ? `${Math.floor(movie.runtime/60)}h ${movie.runtime%60}m` : (movie.episode_run_time?.[0] ? `${movie.episode_run_time[0]}m/ep` : '');
+    const year = (movie.release_date || movie.first_air_date || '').slice(0,4);
+    const title = movie.title || movie.name;
+
+    const cast_html = cast.map(c => `
+      <div class="cast-card" data-person-id="${c.id}">
+        <img src="${profileUrl(c.profile_path)}" alt="${c.name}" onerror="this.src='https://via.placeholder.com/185x278/16161f/7a7a8c?text=?'" loading="lazy"/>
+        <div class="cast-name">${c.name}</div>
+        <div class="cast-char">${c.character||''}</div>
+      </div>`).join('');
+
+    const html = `
+      <div class="detail-hero">
+        <div class="detail-backdrop" style="background-image:url('${backdrop}')"></div>
+        <div class="detail-content">
+          <div class="detail-poster">
+            <img src="${posterUrl(movie.poster_path,'w342')}" alt="${title}"/>
+          </div>
+          <div class="detail-info">
+            <h1>${title}</h1>
+            ${movie.tagline ? `<div class="tagline">"${movie.tagline}"</div>` : ''}
+            <div class="detail-meta">
+              <span class="meta-chip rating">★ ${movie.vote_average?.toFixed(1)||'N/A'}</span>
+              ${year ? `<span class="meta-chip">${year}</span>` : ''}
+              ${runtime ? `<span class="meta-chip">${runtime}</span>` : ''}
+              ${movie.status ? `<span class="meta-chip">${movie.status}</span>` : ''}
+            </div>
+            <div class="genres">${genres_html}</div>
+            <div class="detail-actions">
+              <button class="action-btn fav" id="detailFavBtn" data-id="${id}" data-type="${type}">♥ Favorite</button>
+              <button class="action-btn watch" id="detailWatchBtn" data-id="${id}" data-type="${type}">+ Watchlist</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="detail-body">
+        <h2>Overview</h2>
+        <p class="overview">${movie.overview || 'No overview available.'}</p>
+        ${cast.length ? `<h2>Cast</h2><div class="cast-scroll">${cast_html}</div>` : ''}
+      </div>`;
+
+    $('#movieDetailContent').html(html);
+
+    // Cast click
+    $('#movieDetailContent').find('.cast-card').on('click', function() {
+      openActorDetail($(this).data('person-id'));
+    });
+
+    // Action buttons
+    $('#detailFavBtn').on('click', function() {
+      addToList($(this).data('id'), $(this).data('type'), 'favorite');
+    });
+    $('#detailWatchBtn').on('click', function() {
+      addToList($(this).data('id'), $(this).data('type'), 'watchlist');
+    });
+  }).fail(() => {
+    $('#movieDetailContent').html('<div class="empty-state"><p>Failed to load movie details.</p></div>');
+  });
+}
+
+// ── ACTOR DETAIL ──
+function openActorDetail(personId) {
+  showView('actor');
+  $('#actorDetailContent').html('<div class="loading" style="min-height:400px"><div class="spinner"></div><p>Loading actor...</p></div>');
+
+  $.when(
+    apiGet(`/person/${personId}`, { append_to_response: 'movie_credits' })
+  ).done(person => {
+    const credits = (person.movie_credits?.cast || []).sort((a,b)=>(b.popularity||0)-(a.popularity||0)).slice(0,12);
+    const knownFor = credits.map(m => movieCardHTML(m)).join('');
+
+    const html = `
+      <div class="actor-hero">
+        <div class="actor-photo">
+          <img src="${profileUrl(person.profile_path)}" alt="${person.name}" onerror="this.src='https://via.placeholder.com/185x278/16161f/7a7a8c?text=?'"/>
+        </div>
+        <div class="actor-details">
+          <h1>${person.name}</h1>
+          <div class="actor-meta">
+            ${person.birthday ? `<div class="meta-item"><span>Born</span>${formatDate(person.birthday)}${person.place_of_birth?` in ${person.place_of_birth}`:''}</div>` : ''}
+            ${person.deathday ? `<div class="meta-item"><span>Died</span>${formatDate(person.deathday)}</div>` : ''}
+            ${person.known_for_department ? `<div class="meta-item"><span>Known for</span>${person.known_for_department}</div>` : ''}
+          </div>
+          ${person.biography ? `<p class="actor-bio">${person.biography.slice(0,600)}${person.biography.length>600?'…':''}</p>` : ''}
+        </div>
+      </div>
+      <div class="section" style="padding-top:24px">
+        <div class="section-title" style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;margin-bottom:20px">KNOWN FOR</div>
+        <div class="movies-grid">${knownFor || '<p style="color:var(--muted)">No credits found.</p>'}</div>
+      </div>`;
+
+    $('#actorDetailContent').html(html);
+    bindCardEvents('#actorDetailContent .movies-grid');
+  }).fail(() => {
+    $('#actorDetailContent').html('<div class="empty-state"><p>Failed to load actor details.</p></div>');
+  });
+}
+
+// ── FAVORITES / WATCHLIST ──
+function addToList(mediaId, mediaType, listType) {
+  if (!sessionId || !accountId) {
+    showToast('Sign in to save to lists', 'error');
+    return;
+  }
+  const endpoint = listType === 'favorite'
+    ? `/account/${accountId}/favorite`
+    : `/account/${accountId}/watchlist`;
+
+  const body = listType === 'favorite'
+    ? { media_type: mediaType, media_id: parseInt(mediaId), favorite: true }
+    : { media_type: mediaType, media_id: parseInt(mediaId), watchlist: true };
+
+  $.ajax({
+    url: `${BASE_URL}${endpoint}?api_key=${API_KEY}&session_id=${sessionId}`,
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify(body)
+  }).done(res => {
+    if (res.success || res.status_code === 1 || res.status_code === 12) {
+      showToast(`Added to ${listType === 'favorite' ? 'Favorites ♥' : 'Watchlist ✦'}`, 'success');
+    }
+  }).fail(() => showToast('Failed to update list. Make sure you are signed in.', 'error'));
+}
+
+function removeFromList(mediaId, mediaType, listType) {
+  if (!sessionId || !accountId) return;
+  const endpoint = listType === 'favorites'
+    ? `/account/${accountId}/favorite`
+    : `/account/${accountId}/watchlist`;
+
+  const body = listType === 'favorites'
+    ? { media_type: mediaType, media_id: parseInt(mediaId), favorite: false }
+    : { media_type: mediaType, media_id: parseInt(mediaId), watchlist: false };
+
+  $.ajax({
+    url: `${BASE_URL}${endpoint}?api_key=${API_KEY}&session_id=${sessionId}`,
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify(body)
+  }).done(() => {
+    showToast('Removed from list', 'info');
+    loadList(activeList);
+  }).fail(() => showToast('Failed to remove', 'error'));
+}
+
+function loadList(listType) {
+  activeList = listType;
+  if (!sessionId || !accountId) {
+    $('#listsGrid').html('<div class="empty-state"><div class="empty-icon">🔐</div><h3>Sign in required</h3><p>Sign in with your TMDB account to view your lists.</p></div>');
+    return;
+  }
+  const endpoint = listType === 'favorites'
+    ? `/account/${accountId}/favorite/movies`
+    : `/account/${accountId}/watchlist/movies`;
+
+  $('#listsGrid').html('<div class="loading"><div class="spinner"></div><p>Loading your list...</p></div>');
+
+  apiGet(endpoint, { session_id: sessionId }).done(data => {
+    if (!data.results.length) {
+      const label = listType === 'favorites' ? 'favorites' : 'watchlist';
+      $('#listsGrid').html(`<div class="empty-state"><div class="empty-icon">${listType==='favorites'?'♥':'✦'}</div><h3>Your ${label} is empty</h3><p>Browse movies and add them to your ${label}.</p></div>`);
+      return;
+    }
+    const html = data.results.map(m => {
+      let card = movieCardHTML(m);
+      // Add remove button to overlay
+      card = card.replace('</div>\n      <div class="card-body">', `
+        <button class="overlay-btn" style="background:rgba(255,255,255,0.15);color:#fff" data-remove="${m.id}" data-type="movie" title="Remove">✕</button>
+      </div>
+      <div class="card-body">`);
+      return card;
+    }).join('');
+    $('#listsGrid').html(html);
+    bindCardEvents('#listsGrid');
+
+    // Remove buttons
+    $('#listsGrid').find('[data-remove]').on('click', function(e) {
+      e.stopPropagation();
+      removeFromList($(this).data('remove'), $(this).data('type'), listType);
+    });
+  }).fail(() => {
+    $('#listsGrid').html('<div class="empty-state"><p>Failed to load list.</p></div>');
+  });
+}
+
+$('.list-tab').on('click', function() {
+  $('.list-tab').removeClass('active');
+  $(this).addClass('active');
+  loadList($(this).data('list'));
+});
+
+// ── AUTH ──
+function updateAuthUI() {
+  if (sessionId && username) {
+    $('#loginBtn').hide();
+    $('#userInfo').css('display','flex');
+    $('#usernameDisplay').text(username);
+    // If user is on login view, redirect to home
+    if ($('#loginView').hasClass('active')) showView('home');
+  } else {
+    $('#loginBtn').show();
+    $('#userInfo').hide();
+  }
+}
+
+$('#loginBtn').on('click', () => showView('login'));
+
+$('#startLoginBtn').on('click', async function() {
+  if (API_KEY === 'YOUR_API_KEY_HERE') {
+    showToast('Please set your API key first', 'error');
+    return;
+  }
+  $('#authStatus').text('Getting request token...');
+  $(this).prop('disabled', true);
+
+  apiGet('/authentication/token/new').done(data => {
+    requestToken = data.request_token;
+    // Save token to localStorage so it survives the redirect
+    localStorage.setItem('tmdb_request_token', requestToken);
+    const redirectUrl = window.location.href.split('?')[0];
+    const authUrl = `https://www.themoviedb.org/authenticate/${requestToken}?redirect_to=${encodeURIComponent(redirectUrl)}`;
+    $('#authStatus').html(`Redirecting to TMDB...`);
+    // Redirect directly — TMDB will send them back automatically
+    window.location.href = authUrl;
+  }).fail(() => {
+    $('#authStatus').text('Failed to get token. Check your API key.');
+    $('#startLoginBtn').prop('disabled', false);
+  });
+});
+
+function completeLogin() {
+  if (!requestToken) return;
+  $('#authStatus').text('Creating session...');
+  $('#startLoginBtn').prop('disabled', true);
+
+  $.ajax({
+    url: `${BASE_URL}/authentication/session/new?api_key=${API_KEY}`,
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({ request_token: requestToken })
+  }).done(data => {
+    if (data.success) {
+      sessionId = data.session_id;
+      localStorage.setItem('tmdb_session', sessionId);
+      fetchAccountDetails(() => {
+        showToast(`Welcome, ${username}! 🎬`, 'success');
+        showView('home');
+      });
+    } else {
+      $('#authStatus').text('Authentication failed. Did you approve on TMDB?');
+      $('#startLoginBtn').text('Connect to TMDB').prop('disabled', false);
+    }
+  }).fail(() => {
+    $('#authStatus').text('Session creation failed. Please try again.');
+    $('#startLoginBtn').text('Connect to TMDB').prop('disabled', false);
+  });
+}
+
+function fetchAccountDetails(callback) {
+  apiGet('/account', { session_id: sessionId }).done(acct => {
+    accountId = acct.id;
+    username  = acct.username;
+    localStorage.setItem('tmdb_account_id', accountId);
+    localStorage.setItem('tmdb_username', username);
+    updateAuthUI();
+    if (callback) callback();
+  });
+}
+
+$('#logoutBtn').on('click', function() {
+  $.ajax({
+    url: `${BASE_URL}/authentication/session?api_key=${API_KEY}`,
+    method: 'DELETE',
+    contentType: 'application/json',
+    data: JSON.stringify({ session_id: sessionId })
+  }).always(() => {
+    sessionId = accountId = username = null;
+    localStorage.removeItem('tmdb_session');
+    localStorage.removeItem('tmdb_account_id');
+    localStorage.removeItem('tmdb_username');
+    updateAuthUI();
+    showToast('Signed out', 'info');
+    showView('home');
+  });
+});
+
+// ── HANDLE TMDB AUTH REDIRECT ──
+(function checkRedirectAuth() {
+  const params = new URLSearchParams(window.location.search);
+  const approved = params.get('approved');
+  const tokenFromUrl = params.get('request_token');
+  const tokenFromStorage = localStorage.getItem('tmdb_request_token');
+
+  if (approved === 'true' && (tokenFromUrl || tokenFromStorage)) {
+    requestToken = tokenFromUrl || tokenFromStorage;
+    localStorage.removeItem('tmdb_request_token');
+    // Clean URL
+    window.history.replaceState({}, '', window.location.pathname);
+    $('#authStatus').text('Approved! Creating your session...');
+    $('#startLoginBtn').prop('disabled', true);
+    completeLogin();
+  }
+})();
+
+// ── START ──
+initApiKey();
+
+// If already logged in, never show login view
+if (sessionId && username) {
+  $('#loginBtn').hide();
+  $('#userInfo').css('display','flex');
+  $('#usernameDisplay').text(username);
+  if ($('#loginView').hasClass('active')) showView('home');
+}
+</script>
+</body>
+</html>
