@@ -598,7 +598,6 @@
         <option value="vote_average.desc">Highest Rated</option>
         <option value="release_date.desc">Newest</option>
         <option value="release_date.asc">Oldest</option>
-        <option value="title.asc">Title A–Z</option>
       </select>
       <label>Type:</label>
       <select id="mediaType">
@@ -885,10 +884,12 @@ function discoverMovies(page = 1) {
   if (query) {
     endpoint = `/search/${currentMediaType}`;
     params = { query, page };
+    $('#sortSelect').prop('disabled', true).css('opacity','0.4');
   } else {
     endpoint = `/discover/${currentMediaType}`;
     params = { sort_by: currentSort, page };
     if (currentGenre) params.with_genres = currentGenre;
+    $('#sortSelect').prop('disabled', false).css('opacity','1');
   }
 
   apiGet(endpoint, params).done(data => {
@@ -908,13 +909,31 @@ function discoverMovies(page = 1) {
 $('#doSearchBtn').on('click', () => discoverMovies(1));
 $('#searchInput').on('keypress', e => { if (e.which === 13) discoverMovies(1); });
 $('#genreSelect, #sortSelect').on('change', () => discoverMovies(1));
-$('#mediaType').on('change', () => {  
-  $('#genreSelect').html('<option value="">All Genres</option>');  
-  const type = $('#mediaType').val();   
-  apiGet(`/genre/${type}/list`).done(data => {     
-    data.genres.forEach(g => $('#genreSelect').append(`<option value="${g.id}">${g.name}</option>`));  
-  });  
-  discoverMovies(1); 
+$('#mediaType').on('change', () => {
+  const type = $('#mediaType').val();
+
+  // Swap sort options based on media type
+  if (type === 'tv') {
+    $('#sortSelect').html(`
+      <option value="popularity.desc">Most Popular</option>
+      <option value="vote_average.desc">Highest Rated</option>
+      <option value="first_air_date.desc">Newest</option>
+      <option value="first_air_date.asc">Oldest</option>
+    `);
+  } else {
+    $('#sortSelect').html(`
+      <option value="popularity.desc">Most Popular</option>
+      <option value="vote_average.desc">Highest Rated</option>
+      <option value="primary_release_date.desc">Newest</option>
+      <option value="primary_release_date.asc">Oldest</option>
+    `);
+  }
+
+  $('#genreSelect').html('<option value="">All Genres</option>');
+  apiGet(`/genre/${type}/list`).done(data => {
+    data.genres.forEach(g => $('#genreSelect').append(`<option value="${g.id}">${g.name}</option>`));
+  });
+  discoverMovies(1);
 });
 
 // Hero search
