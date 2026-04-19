@@ -467,6 +467,17 @@
       font-size: 12px; font-weight: 700; padding: 6px 14px;
       border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif;
     }
+    /* ── NO POSTER FALLBACK ── */
+    .no-poster {
+      width: 100%; aspect-ratio: 2/3;
+      background: linear-gradient(135deg, var(--bg3) 0%, var(--card2) 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 12px; text-align: center;
+    }
+    .no-poster span {
+      font-size: 12px; color: var(--muted); line-height: 1.4;
+      word-break: break-word;
+    }
 
     /* footer */
     #tmdbFooter {
@@ -727,7 +738,7 @@ function apiGet(endpoint, params = {}) {
 }
 
 function posterUrl(path, size = 'w300') {
-  return path ? `${IMG_BASE}${size}${path}` : `https://via.placeholder.com/300x450/16161f/7a7a8c?text=No+Image`;
+  return path ? `${IMG_BASE}${size}${path}` : ``;
 }
 
 function backdropUrl(path) {
@@ -735,7 +746,7 @@ function backdropUrl(path) {
 }
 
 function profileUrl(path) {
-  return path ? `${IMG_BASE}w185${path}` : `https://via.placeholder.com/185x278/16161f/7a7a8c?text=?`;
+  return path ? `${IMG_BASE}w185${path}` : ``;
 }
 
 function formatDate(d) {
@@ -801,7 +812,10 @@ function movieCardHTML(item, mediaType = 'movie') {
   const type = item.title ? 'movie' : 'tv';
   return `
     <div class="movie-card" data-id="${item.id}" data-type="${type}">
-      <img src="${poster}" alt="${title}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x450/16161f/7a7a8c?text=No+Image'"/>
+      ${poster
+  ? `<img src="${poster}" alt="${title}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class='no-poster' style='display:none'><span>No Image</span></div>`
+  : `<div class='no-poster'><span>${title.slice(0,30)}</span></div>`
+}
       <div class="card-overlay">
         <button class="overlay-btn fav-btn" data-id="${item.id}" data-type="${type}" title="Favorite">♥</button>
         <button class="overlay-btn watch-btn" data-id="${item.id}" data-type="${type}" title="Watchlist">+</button>
@@ -945,7 +959,7 @@ function openMovieDetail(id, type = 'movie') {
 
     const cast_html = cast.map(c => `
       <div class="cast-card" data-person-id="${c.id}">
-        <img src="${profileUrl(c.profile_path)}" alt="${c.name}" onerror="this.src='https://via.placeholder.com/185x278/16161f/7a7a8c?text=?'" loading="lazy"/>
+        <img src="${profileUrl(c.profile_path)}" alt="${c.name}" onerror="this.style.display='none'" loading="lazy"/>
         <div class="cast-name">${c.name}</div>
         <div class="cast-char">${c.character||''}</div>
       </div>`).join('');
@@ -1013,7 +1027,7 @@ function openActorDetail(personId) {
     const html = `
       <div class="actor-hero">
         <div class="actor-photo">
-          <img src="${profileUrl(person.profile_path)}" alt="${person.name}" onerror="this.src='https://via.placeholder.com/185x278/16161f/7a7a8c?text=?'"/>
+          <img src="${profileUrl(person.profile_path)}" alt="${person.name}" onerror="this.style.display='none'"/>
         </div>
         <div class="actor-details">
           <h1>${person.name}</h1>
