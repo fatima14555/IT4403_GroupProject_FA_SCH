@@ -511,7 +511,7 @@
   </style>
 </head>
 <body>
-<!-- API KEY BANNER -->
+<!--api key banner -->
 <div id="apiKeyBanner">
   <span>⚠ SETUP REQUIRED</span>
   <p>Enter your TMDB API key to get started:</p>
@@ -519,9 +519,9 @@
   <button id="saveKeyBtn">Save & Load</button>
 </div>
 
-<!-- NAV -->
+<!-- navigation -->
 <nav id="nav">
-  <div class="logo" onclick="showView('home')">CINESCOPE</div>
+  <div class="logo" onclick="showView('home')">FILMCACHE</div>
   <div class="nav-links">
     <button class="nav-btn active" data-view="home">Home</button>
     <button class="nav-btn" data-view="search">Discover</button>
@@ -536,14 +536,14 @@
   </div>
 </nav>
 
-<!-- TOAST -->
+<!-- toast -->
 <div id="toast"></div>
 
 
-<!-- MAIN -->
+<!-- main start -->
 <div id="main">
 
-  <!-- HOME VIEW -->
+  <!-- home view -->
   <div id="homeView" class="view active">
     <div id="heroSection">
       <div class="hero-content">
@@ -575,7 +575,7 @@
     </div>
   </div>
 
-  <!-- SEARCH/DISCOVER VIEW -->
+  <!-- search/discover -->
   <div id="searchView" class="view">
     <div class="section" style="padding-bottom: 16px;">
       <div class="section-title" style="font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:2px; margin-bottom:24px;">DISCOVER MOVIES</div>
@@ -607,13 +607,13 @@
     </div>
   </div>
 
-  <!-- MOVIE DETAIL VIEW -->
+  <!-- movie detail-->
   <div id="movieView" class="view">
     <button class="back-btn" id="movieBackBtn">← Back</button>
     <div id="movieDetailContent"></div>
   </div>
 
-<!-- TMDB ATTRIBUTION FOOTER -->
+<!-- TMBD credit and warning -->
 <footer id="tmdbFooter">
   <div class="footer-inner">
     <img src="tmdb-logo.svg" alt="TMDB Logo" height="20" onerror="this.style.display='none';document.getElementById('tmdbBadge').style.display='inline-block'"/>
@@ -624,13 +624,13 @@
 </footer>
 
 
-  <!-- ACTOR VIEW -->
+  <!-- actor details -->
   <div id="actorView" class="view">
     <button class="back-btn" id="actorBackBtn">← Back</button>
     <div id="actorDetailContent"></div>
   </div>
 
-  <!-- MY LISTS VIEW -->
+  <!-- my list view -->
   <div id="listsView" class="view">
     <div class="section" style="padding-bottom:0">
       <div class="section-title" style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:20px">MY LISTS</div>
@@ -650,10 +650,10 @@
     </div>
   </div>
 
-  <!-- LOGIN VIEW -->
+  <!-- logIN page -->
   <div id="loginView" class="view">
     <div class="login-box">
-      <div class="logo-big">CINESCOPE</div>
+      <div class="logo-big">FILMCACHE</div>
       <p>Sign in with your TMDB account to save favorites, build your watchlist, and sync across devices.</p>
       <div class="login-steps">
         <div class="step">
@@ -678,13 +678,13 @@
 
 <script>
 // ═══════════════════════════════════════════════
-//  CONFIG — Replace with your TMDB API key
+//  CONFIG — (API KEY ADDED)
 // ═══════════════════════════════════════════════
 let API_KEY = localStorage.getItem('tmdb_api_key') || '13d3398d7d4b5bd5db5c0ccb799141d5';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_BASE = 'https://image.tmdb.org/t/p/';
 
-// ── APP STATE ──
+// ── app state ──
 let sessionId = localStorage.getItem('tmdb_session') || null;
 let accountId = localStorage.getItem('tmdb_account_id') || null;
 let username  = localStorage.getItem('tmdb_username') || null;
@@ -801,7 +801,7 @@ $('#actorBackBtn').on('click', function() {
   }
 });
 
-// ── GENRES ──
+// ── genres──
 function loadGenres() {
   apiGet('/genre/movie/list').done(data => {
     genres = {};
@@ -814,7 +814,7 @@ function loadGenres() {
   });
 }
 
-// ── MOVIE CARD HTML ──
+// ── movie card html ──
 function movieCardHTML(item, mediaType = 'movie') {
   const title = item.title || item.name || 'Unknown';
   const date  = (item.release_date || item.first_air_date || '').slice(0,4);
@@ -841,7 +841,7 @@ function movieCardHTML(item, mediaType = 'movie') {
     </div>`;
 }
 
-// ── TRENDING ──
+// ── trending movies ──
 function loadTrending() {
   $('#trendingGrid').html('<div class="loading"><div class="spinner"></div><p>Loading trending...</p></div>');
   apiGet('/trending/movie/day').done(data => {
@@ -913,7 +913,7 @@ $('#genreSelect, #sortSelect').on('change', () => discoverMovies(1));
 $('#mediaType').on('change', () => {
   const type = $('#mediaType').val();
 
-  // Swap sort options based on media type
+  // swap sort options based on media type (filters)
   if (type === 'tv') {
     $('#sortSelect').html(`
       <option value="popularity.desc">Most Popular</option>
@@ -937,7 +937,7 @@ $('#mediaType').on('change', () => {
   discoverMovies(1);
 });
 
-// Hero search
+// hero search
 $('#heroSearchBtn').on('click', () => {
   const q = $('#heroSearch').val().trim();
   if (!q) return;
@@ -970,7 +970,7 @@ $(document).on('click', '#searchPagination .page-btn:not(:disabled)', function()
   $('html,body').animate({scrollTop: $('#searchView').offset().top - 80}, 300);
 });
 
-// ── MOVIE DETAIL ──
+// ── movie detail ──
 function bindCardEvents(container) {
   $(container).find('.movie-card').on('click', function(e) {
     if ($(e.target).hasClass('overlay-btn')) return;
@@ -1044,12 +1044,12 @@ function openMovieDetail(id, type = 'movie') {
 
     $('#movieDetailContent').html(html);
 
-    // Cast click
+    // cast click
     $('#movieDetailContent').find('.cast-card').on('click', function() {
       openActorDetail($(this).data('person-id'));
     });
 
-    // Action buttons
+    // action buttons
     $('#detailFavBtn').on('click', function() {
       addToList($(this).data('id'), $(this).data('type'), 'favorite');
     });
@@ -1061,7 +1061,7 @@ function openMovieDetail(id, type = 'movie') {
   });
 }
 
-// ── ACTOR DETAIL ──
+// ── actor detail  ──
 function openActorDetail(personId) {
   showView('actor');
   $('#actorDetailContent').html('<div class="loading" style="min-height:400px"><div class="spinner"></div><p>Loading actor...</p></div>');
@@ -1099,7 +1099,7 @@ function openActorDetail(personId) {
   });
 }
 
-// ── FAVORITES / WATCHLIST ──
+// ── favorites / watchlist ──
 function addToList(mediaId, mediaType, listType) {
   if (!sessionId || !accountId) {
     showToast('Sign in to save to lists', 'error');
@@ -1166,7 +1166,7 @@ function loadList(listType) {
     }
     const html = data.results.map(m => {
       let card = movieCardHTML(m);
-      // Add remove button to overlay
+      // add remove button to overlay
       card = card.replace('</div>\n      <div class="card-body">', `
         <button class="overlay-btn" style="background:rgba(255,255,255,0.15);color:#fff" data-remove="${m.id}" data-type="movie" title="Remove">✕</button>
       </div>
@@ -1176,7 +1176,7 @@ function loadList(listType) {
     $('#listsGrid').html(html);
     bindCardEvents('#listsGrid');
 
-    // Remove buttons
+    // remove buttons
     $('#listsGrid').find('[data-remove]').on('click', function(e) {
       e.stopPropagation();
       removeFromList($(this).data('remove'), $(this).data('type'), listType);
@@ -1192,7 +1192,7 @@ $('.list-tab').on('click', function() {
   loadList($(this).data('list'));
 });
 
-// ── AUTH ──
+// ── authorization ──
 function updateAuthUI() {
   if (sessionId && username) {
     $('#loginBtn').hide();
@@ -1308,7 +1308,7 @@ $('#logoutBtn').on('click', function() {
 // ── START ──
 initApiKey();
 
-// If already logged in, never show login view
+// if already logged in, never show login view
 if (sessionId && username) {
   $('#loginBtn').hide();
   $('#userInfo').css('display','flex');
